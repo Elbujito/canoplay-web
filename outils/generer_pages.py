@@ -26,7 +26,9 @@ NAV = [
     ("/collections/all", "Nos Wargames"),
     ("/pages/contact", "Contact"),
     ("/blogs/infos", "Blog"),
+    ("/jouer", "Jouer"),
 ]
+JEU_URL = "https://jeu.canoplay.fr/"
 
 # --- Contenu ---------------------------------------------------------------
 
@@ -310,6 +312,31 @@ def page_article(a: dict) -> str:
                  [ld_fil, ld_art], precharge, "article") + entete("/blogs/infos") + corps + PIED)
 
 
+def page_jouer() -> str:
+    visible, ld_fil = fil([("/", "Accueil"), ("/jouer", "Jouer")])
+    ld_jeu = {"@context": "https://schema.org", "@type": "WebApplication", "name": "Matrix game Canoplay",
+              "url": JEU_URL, "applicationCategory": "GameApplication", "operatingSystem": "Navigateur web",
+              "inLanguage": "fr-FR", "publisher": {"@type": "Organization", "name": NOM}}
+    corps = f"""<main id="contenu">
+{visible}<div class="page-width contact">
+<h1 class="page-title">Matrix game</h1>
+<p class="lead">Un <em>matrix game</em> est un jeu de simulation de conflit argumenté : chaque joueur
+propose une action et la défend par des arguments, l'arbitre en tranche l'issue. Dans le nôtre,
+chaque rôle — joueur ou arbitre — peut être tenu par un humain ou par une IA.</p>
+<p>Les scénarios couvrent des crises diplomatiques et des wargames prospectifs sur la guerre dans
+l'espace, avec un catalogue commun de moyens spatiaux. La partie se joue dans le navigateur.</p>
+<p><strong>Accès sur invitation</strong> : un identifiant vous est remis par Canoplay.</p>
+<p class="actions"><a class="btn btn--dark" href="{JEU_URL}">Jouer</a>
+<a class="lien" href="/pages/contact">Demander un accès</a></p>
+</div>
+</main>
+"""
+    return (tete("Jouer au matrix game — Canoplay",
+                 "Le matrix game Canoplay : simulation de conflit argumentée où chaque rôle est tenu par un "
+                 "humain ou une IA. Accès sur invitation.",
+                 "/jouer", "/assets/img/og-image.png", [ld_fil, ld_jeu]) + entete("/jouer") + corps + PIED)
+
+
 def page_contact() -> str:
     visible, ld_fil = fil([("/", "Accueil"), ("/pages/contact", "Contact")])
     corps = f"""<main id="contenu">
@@ -341,6 +368,7 @@ def main() -> None:
         "/collections/all": ("collections/all.html", page_wargames()),
         "/blogs/infos": ("blogs/infos/index.html", page_blog()),
         "/pages/contact": ("pages/contact.html", page_contact()),
+        "/jouer": ("jouer.html", page_jouer()),
     }
     for w in WARGAMES:
         pages[f"/products/{w['slug']}"] = (f"products/{w['slug']}.html", page_wargame(w))

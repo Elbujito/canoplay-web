@@ -1,0 +1,50 @@
+# Authelia 4.38 — connexion par identifiant et mot de passe devant jeu.canoplay.fr
+# Les secrets sont lus dans des fichiers (variables *_FILE du docker-compose), jamais ici.
+theme: auto
+
+server:
+  address: 'tcp://:9091'
+
+log:
+  level: info
+
+totp:
+  issuer: canoplay.fr
+
+authentication_backend:
+  password_reset:
+    disable: true           # pas d'envoi d'e-mail : l'administrateur réinitialise
+  file:
+    path: /config/utilisateurs.yml
+    watch: true             # un compte ajouté est pris en compte sans redémarrage
+    password:
+      algorithm: argon2
+
+access_control:
+  default_policy: deny
+  rules:
+    - domain: jeu.canoplay.fr
+      policy: one_factor    # passer à two_factor pour exiger un code TOTP
+
+session:
+  name: canoplay_session
+  expiration: 12h
+  inactivity: 2h
+  remember_me: 30d
+  cookies:
+    - domain: canoplay.fr
+      authelia_url: https://auth.canoplay.fr
+      default_redirection_url: https://jeu.canoplay.fr
+
+regulation:                 # anti-force brute : 5 échecs en 10 min → 30 min de blocage
+  max_retries: 5
+  find_time: 10m
+  ban_time: 30m
+
+storage:
+  local:
+    path: /data/db.sqlite3
+
+notifier:
+  filesystem:
+    filename: /data/notifications.txt

@@ -159,6 +159,11 @@ h1,h2,h3{color:rgb(var(--fg));font-weight:700;letter-spacing:.06rem;line-height:
 .contact dl{max-width:72rem;display:grid;grid-template-columns:max-content 1fr;gap:1rem 2.4rem;margin:0 0 3rem}
 .contact dt{color:rgb(var(--fg))}
 .contact dd{margin:0}
+.contact .lead{font-size:1.8rem;color:rgb(var(--fg) / .85)}
+.contact p{max-width:72rem}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:1.6rem 2.4rem;margin-top:3rem}
+.actions .btn{margin-top:0}
+.lien{text-underline-offset:.3rem}
 
 /* Pied de page */
 .footer{border-top:.1rem solid rgb(var(--fg) / .08);padding-block:3.6rem;font-size:1.2rem;text-align:center}

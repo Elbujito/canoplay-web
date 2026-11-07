@@ -1,0 +1,47 @@
+# Services permanents du VPS : Caddy (HTTPS + proxy) et Authelia (connexion par identifiant).
+# Le conteneur du jeu n'est PAS ici : deployer.sh le crée (bleu / vert) pour basculer sans coupure.
+name: jeu
+
+services:
+  caddy:
+    image: caddy:2.8.4
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL manquant dans .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./etat/caddy:/etc/caddy/etat:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [jeu]
+    depends_on: [authelia]
+
+  authelia:
+    image: authelia/authelia:4.38.17
+    container_name: authelia
+    restart: unless-stopped
+    environment:
+      AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE: /secrets/jwt
+      AUTHELIA_SESSION_SECRET_FILE: /secrets/session
+      AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: /secrets/stockage
+    volumes:
+      - ./authelia/configuration.yml:/config/configuration.yml:ro
+      - ./etat/utilisateurs.yml:/config/utilisateurs.yml
+      - ./etat/secrets:/secrets:ro
+      - authelia_data:/data
+    networks: [jeu]
+
+volumes:
+  caddy_data:
+  caddy_config:
+  authelia_data:
+
+networks:
+  jeu:                      # créé par installer_vps.sh, partagé avec les conteneurs du jeu (deployer.sh)
+    name: jeu
+    external: true
