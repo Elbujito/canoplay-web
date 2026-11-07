@@ -16,7 +16,7 @@ ETAT="$DIR/etat"
 ATTENTE="$ETAT/version_en_attente"
 ACTIF="$ETAT/caddy/actif.caddy"
 MAX_ATTENTE_H="${MAX_ATTENTE_H:-24}"   # au-delà, on bascule : les parties se reprennent depuis leur sauvegarde
-URL_PUBLIQUE="${URL_PUBLIQUE:-https://jeu.canoplay.fr}"
+URL_PUBLIQUE="${URL_PUBLIQUE:-https://gamecanoplay.fr}"
 
 journal() { echo "[$(date -u +%FT%TZ)] $*"; }
 

@@ -28,7 +28,7 @@ NAV = [
     ("/blogs/infos", "Blog"),
     ("/jouer", "Jouer"),
 ]
-JEU_URL = "https://jeu.canoplay.fr/"
+JEU_URL = "https://gamecanoplay.fr/"
 
 # --- Contenu ---------------------------------------------------------------
 

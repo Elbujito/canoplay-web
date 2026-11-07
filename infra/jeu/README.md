@@ -1,12 +1,12 @@
-# Hébergement du matrix game — `jeu.canoplay.fr`
+# Hébergement du matrix game — `gamecanoplay.fr`
 
 Le jeu (dépôt `FlorentHennart/matrix-game`) tourne sur un VPS, derrière une connexion par identifiant.
 Son code reste dans son dépôt : ce dossier ne contient que l'infrastructure.
 
 ```
 Internet ──443──▶ Caddy (HTTPS automatique)
-                    ├── auth.canoplay.fr ──▶ Authelia (identifiant + mot de passe, anti-force brute)
-                    └── jeu.canoplay.fr  ──▶ forward_auth Authelia ──▶ jeu-bleu | jeu-vert (port 8765, réseau interne)
+                    ├── auth.gamecanoplay.fr ──▶ Authelia (identifiant + mot de passe, anti-force brute)
+                    └── gamecanoplay.fr  ──▶ forward_auth Authelia ──▶ jeu-bleu | jeu-vert (port 8765, réseau interne)
 ```
 
 ## Déploiement continu
@@ -27,7 +27,7 @@ Internet ──443──▶ Caddy (HTTPS automatique)
 
 | # | Qui | Action |
 |---|---|---|
-| 1 | registrar | DNS : `jeu` et `auth` → A `57.129.164.101`, AAAA `2001:41d0:801:2000::7eb8` |
+| 1 | registrar | DNS de `gamecanoplay.fr` : `@`, `www` et `auth` → A `57.129.164.101` (fait), AAAA `2001:41d0:801:2000::7eb8` (facultatif) |
 | 2 | poste local | `ssh-keygen -t ed25519 -N "" -C deploiement-jeu -f ~/.ssh/deploiement-jeu` |
 | 3 | VPS (root) | copier ce dossier, puis `sudo ACME_EMAIL=… ADMIN_IDENT=… bash installer_vps.sh "$(cat ~/.ssh/deploiement-jeu.pub)"` |
 | 4 | VPS | `sudo nano /opt/jeu/etat/jeu.env` → `ANTHROPIC_API_KEY=…` (fixer une limite de dépense dans la console Anthropic) |
