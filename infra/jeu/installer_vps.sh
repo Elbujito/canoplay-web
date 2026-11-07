@@ -7,7 +7,7 @@
 set -euo pipefail
 
 CLE_DEPLOIEMENT="${1:?usage : installer_vps.sh \"ssh-ed25519 AAAA… deploiement\"}"
-: "${ACME_EMAIL:?définir ACME_EMAIL (e-mail des certificats Let's Encrypt)}"
+: "${ACME_EMAIL:?définir ACME_EMAIL (e-mail des certificats Let’s Encrypt)}"
 DIR=/opt/jeu
 SRC="$(cd "$(dirname "$0")" && pwd)"
 
