@@ -35,5 +35,15 @@ with open(fichier + ".nouveau", "w") as f:
     yaml.safe_dump(data, f, allow_unicode=True, sort_keys=True)
 PY
 unset MDP MDP2
-mv "$FICHIER.nouveau" "$FICHIER"
+# Réécriture EN PLACE (même inode) : Docker monte ce fichier précis dans Authelia ; un « mv »
+# créerait un nouveau fichier que le conteneur ne verrait jamais.
+cat "$FICHIER.nouveau" > "$FICHIER"
+rm -f "$FICHIER.nouveau"
 echo "compte « $IDENT » enregistré"
+# La surveillance du fichier (watch) n'est pas fiable à travers un montage Docker : on recharge
+# Authelia pour que le compte soit utilisable tout de suite (les joueurs connectés se reconnectent).
+if docker inspect authelia >/dev/null 2>&1; then
+  docker restart authelia >/dev/null
+  for _ in $(seq 1 30); do [ "$(docker inspect -f '{{.State.Health.Status}}' authelia)" = healthy ] && break; sleep 2; done
+  echo "Authelia rechargé : $(docker inspect -f '{{.State.Health.Status}}' authelia)"
+fi
