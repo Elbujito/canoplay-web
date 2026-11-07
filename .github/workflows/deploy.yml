@@ -1,33 +1,17 @@
-# Déploiement Vercel piloté par GitHub Actions
-# Méthode officielle Vercel : vercel pull → vercel build → vercel deploy --prebuilt
-# https://vercel.com/kb/guide/how-can-i-use-github-actions-with-vercel
-#
-#   branche main            → PRODUCTION
-#   toute autre branche     → PRÉVISUALISATION (URL commentée sur la PR)
-#
-# Secrets du dépôt requis : VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID.
-# Tant qu'ils manquent, les contrôles tournent et le déploiement est sauté (pas de rouge).
+# Contrôles du site avant déploiement.
+# Le déploiement lui-même est fait par l'intégration GitHub de Vercel :
+#   develop            → production (canoplay-web.vercel.app / www.canoplay.fr)
+#   toute autre branche → prévisualisation (URL commentée par Vercel sur la PR)
 
-name: Déploiement Vercel
+name: Contrôles du site
 
 on:
   push:
     branches: ["**"]
   pull_request:
-  workflow_dispatch:
-
-concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: true
 
 permissions:
   contents: read
-  pull-requests: write
-
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-  VERCEL_CLI: vercel@65.2.0
 
 jobs:
   controles:
@@ -37,60 +21,9 @@ jobs:
       - uses: actions/checkout@v5
       - name: vercel.json est un JSON valide
         run: python3 -c "import json; json.load(open('vercel.json'))"
-      - name: Chaque ressource locale référencée existe
+      - name: Les pages commitées sont à jour avec le générateur
         run: |
-          manquants=0
-          for page in $(find . -name '*.html' -not -path './node_modules/*' -not -path './.vercel/*'); do
-            dir=$(dirname "$page")
-            for ref in $(grep -oE '(src|href|srcset|imagesrcset)="[^"]+"' "$page" | sed -E 's/^[a-z]+="//; s/"$//' | tr ',' '\n' | awk '{print $1}'); do
-              case "$ref" in http*|//*|\#*|mailto:*|/) continue;; esac
-              chemin="${ref%%\?*}"; [ "${chemin#/}" != "$chemin" ] && f=".${chemin}" || f="$dir/$chemin"
-              [ -e "$f" ] || { echo "::error file=$page::ressource absente : $ref"; manquants=$((manquants+1)); }
-            done
-          done
-          echo "ressources absentes : $manquants"; [ "$manquants" -eq 0 ]
-
-  deployer:
-    name: Déployer
-    needs: controles
-    # Une PR depuis une branche du dépôt est déjà déployée par l'évènement push : pas de doublon.
-    if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'main' && 'production' || 'preview' }}
-    steps:
-      - uses: actions/checkout@v5
-      - name: Secrets présents ?
-        id: secrets
-        env:
-          T: ${{ secrets.VERCEL_TOKEN }}
-        run: |
-          if [ -n "$T" ] && [ -n "$VERCEL_ORG_ID" ] && [ -n "$VERCEL_PROJECT_ID" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"
-          else echo "::notice::Secrets Vercel absents : déploiement sauté."; echo "ok=false" >> "$GITHUB_OUTPUT"; fi
-      - uses: actions/setup-node@v5
-        if: steps.secrets.outputs.ok == 'true'
-        with:
-          node-version: 22
-      - name: Installer la CLI Vercel
-        if: steps.secrets.outputs.ok == 'true'
-        run: npm install --global "$VERCEL_CLI"
-      - name: Récupérer la configuration du projet
-        if: steps.secrets.outputs.ok == 'true'
-        run: vercel pull --yes --environment=${{ github.ref_name == 'main' && 'production' || 'preview' }} --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Construire
-        if: steps.secrets.outputs.ok == 'true'
-        run: vercel build ${{ github.ref_name == 'main' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Déployer
-        id: deploy
-        if: steps.secrets.outputs.ok == 'true'
-        run: |
-          url=$(vercel deploy --prebuilt ${{ github.ref_name == 'main' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }})
-          echo "url=$url" >> "$GITHUB_OUTPUT"
-          echo "### Déployé : $url" >> "$GITHUB_STEP_SUMMARY"
-      - name: Commenter l'URL sur la PR ouverte
-        if: steps.deploy.outputs.url != '' && github.ref_name != 'main'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          URL: ${{ steps.deploy.outputs.url }}
-        run: |
-          pr=$(gh pr list --head "${{ github.ref_name }}" --json number --jq '.[0].number')
-          [ -n "$pr" ] && gh pr comment "$pr" --body "Prévisualisation Vercel : $URL" || echo "aucune PR ouverte"
+          python3 outils/generer_pages.py
+          git diff --exit-code || { echo "::error::Pages non régénérées : lancer python3 outils/generer_pages.py et commiter."; exit 1; }
+      - name: Chaque ressource et lien interne existe
+        run: python3 outils/verifier_liens.py

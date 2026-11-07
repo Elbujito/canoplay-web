@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://canoplay.fr/</loc><lastmod>2026-11-07</lastmod></url>
+  <url><loc>https://canoplay.fr/</loc></url>
+  <url><loc>https://canoplay.fr/collections/all</loc></url>
+  <url><loc>https://canoplay.fr/blogs/infos</loc></url>
+  <url><loc>https://canoplay.fr/pages/contact</loc></url>
+  <url><loc>https://canoplay.fr/products/spaceops</loc></url>
+  <url><loc>https://canoplay.fr/blogs/infos/lusage-du-wargaming-par-les-differentes-armees-pendant-la-seconde-guerre-mondiale</loc></url>
 </urlset>
