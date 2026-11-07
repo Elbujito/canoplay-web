@@ -4,166 +4,72 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Canoplay, la nouvelle ère du wargaming</title>
-<meta name="description" content="Canoplay conçoit des wargames basés sur des cartes pour le renforcement d'équipe et l'initiation à la guerre spatiale : simples, engageants, ancrés dans des contextes réalistes.">
+<meta name="description" content="Canoplay conçoit des wargames basés sur des cartes pour le renforcement d&#x27;équipe et l&#x27;initiation à la guerre spatiale : simples, engageants, ancrés dans des contextes réalistes.">
 <link rel="canonical" href="https://canoplay.fr/">
 <meta name="theme-color" content="#f3f3f3">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Canoplay">
 <meta property="og:url" content="https://canoplay.fr/">
 <meta property="og:title" content="Canoplay, la nouvelle ère du wargaming">
-<meta property="og:description" content="Des wargames basés sur des cartes pour le renforcement d'équipe et l'initiation à la guerre spatiale.">
+<meta property="og:description" content="Canoplay conçoit des wargames basés sur des cartes pour le renforcement d&#x27;équipe et l&#x27;initiation à la guerre spatiale : simples, engageants, ancrés dans des contextes réalistes.">
 <meta property="og:image" content="https://canoplay.fr/assets/img/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="assets/img/logo-240.webp" type="image/webp">
-<link rel="preload" href="assets/fonts/assistant-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" as="image" href="assets/img/blood-moon-1500.webp" imagesrcset="assets/img/blood-moon-750.webp 750w, assets/img/blood-moon-1500.webp 1500w" imagesizes="(min-width: 750px) 50vw, 100vw" fetchpriority="high">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"Canoplay","url":"https://canoplay.fr/","logo":"https://canoplay.fr/assets/img/logo-240.webp","description":"Wargames basés sur des cartes pour le renforcement d'équipe et l'initiation à la guerre spatiale.","founder":[{"@type":"Person","name":"Florent Hennart","jobTitle":"Co-Fondateur"},{"@type":"Person","name":"Adrien Roques","jobTitle":"Co-Fondateur"}]}
-</script>
-<style>
-@font-face{font-family:Assistant;src:url(assets/fonts/assistant-latin.woff2) format("woff2");font-weight:200 800;font-style:normal;font-display:swap}
-/* Jeux de couleurs relevés sur le thème Shopify d'origine */
-:root{
-  --bg:243 243 243; --fg:18 18 18;              /* scheme-2 : fond principal */
-  --dark:36 40 51;                              /* scheme-3 : bannière */
-  --accent:51 79 180;                           /* scheme-5 : bleu */
-  --page:120rem; --gutter:1.6rem;
-}
-@media (min-width:750px){:root{--gutter:5rem}}
-*,*::before,*::after{box-sizing:border-box}
-html{font-size:62.5%;-webkit-text-size-adjust:100%}
-body{margin:0;background:rgb(var(--bg));color:rgb(var(--fg) / .75);font:400 1.5rem/1.8 Assistant,sans-serif;letter-spacing:.06rem}
-@media (min-width:750px){body{font-size:1.6rem}}
-img{display:block;max-width:100%;height:auto}
-a{color:inherit}
-h1,h2,h3{color:rgb(var(--fg));font-weight:700;letter-spacing:.06rem;line-height:1.3;margin:0}
-.skip{position:absolute;left:-999rem;top:0;background:rgb(var(--fg));color:#fff;padding:1rem 2rem;z-index:10}
-.skip:focus{left:1rem}
-:focus-visible{outline:.2rem solid rgb(var(--fg) / .6);outline-offset:.3rem}
-.page-width{max-width:var(--page);margin:0 auto;padding:0 var(--gutter)}
-
-/* Bandeau d'annonce */
-.announce{text-align:center;font-size:1.3rem;padding:1rem 0;color:rgb(var(--fg));border-bottom:.1rem solid rgb(var(--fg) / .08)}
-
-/* En-tête */
-.header{display:flex;align-items:center;gap:3rem;padding-block:2rem}
-.header__logo img{width:9rem;height:9rem}
-.nav ul{display:flex;gap:.4rem;list-style:none;margin:0;padding:0}
-.nav a{display:block;padding:1.2rem;font-size:1.4rem;text-decoration:none;color:rgb(var(--fg) / .75)}
-.nav a:hover{color:rgb(var(--fg));text-decoration:underline;text-underline-offset:.3rem}
-.nav a[aria-current="page"]{color:rgb(var(--fg));text-decoration:underline;text-underline-offset:.3rem}
-.menu{display:none}
-@media (max-width:989px){
-  .header{justify-content:center;position:relative;padding-block:1.2rem}
-  .header__logo img{width:7rem;height:7rem}
-  .nav{display:none}
-  .menu{display:block;position:absolute;left:var(--gutter);top:50%;transform:translateY(-50%)}
-  .menu summary{list-style:none;cursor:pointer;width:4.4rem;height:4.4rem;display:grid;place-items:center}
-  .menu summary::-webkit-details-marker{display:none}
-  .menu[open] ul{position:fixed;inset:0;top:0;background:rgb(var(--bg));z-index:5;list-style:none;margin:0;padding:8rem var(--gutter) 2rem}
-  .menu[open] summary{position:fixed;z-index:6;top:1.6rem;left:var(--gutter)}
-  .menu a{display:block;padding:1.1rem 0;font-size:1.8rem;text-decoration:none;color:rgb(var(--fg))}
-}
-
-/* Bannière : deux images côte à côte, texte centré en bas */
-.banner{position:relative;display:flex;background:rgb(var(--dark));color:#fff;min-height:34rem;overflow:hidden}
-.banner__media{position:relative;flex:1 1 50%;min-height:100%}
-.banner__media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.banner__media + .banner__media{display:none}
-.banner::after{content:"";position:absolute;inset:0;background:rgb(0 0 0 / .3)}
-.banner__content{position:absolute;inset:auto 0 0;z-index:1;text-align:center;padding:4rem var(--gutter) 4.5rem}
-.banner h1{color:#fff;font-weight:400;font-size:3rem}
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:4.5rem;min-width:12rem;padding:0 3rem;margin-top:2rem;font-size:1.5rem;letter-spacing:.1rem;text-decoration:none;color:#fff;box-shadow:inset 0 0 0 .1rem #fff;transition:box-shadow .1s}
-.btn:hover{box-shadow:inset 0 0 0 .2rem #fff}
-@media (min-width:750px){
-  .banner{min-height:72rem}
-  .banner__media + .banner__media{display:block}
-  .banner h1{font-size:4rem}
-}
-
-/* Rangées image + texte, alternées */
-.rows{padding-block:3.6rem 1.2rem}
-.row{display:grid;gap:0;margin-bottom:.8rem}
-.row__img{aspect-ratio:1.2;overflow:hidden}
-.row__img img{width:100%;height:100%;object-fit:cover}
-.row__text{padding:3rem 0 3.6rem}
-.row__text h2{font-size:2.4rem;margin-bottom:1.6rem}
-.row__text p{margin:0;font-size:1.4rem}
-@media (min-width:750px){
-  .row{grid-template-columns:1fr 1fr;align-items:center}
-  .row__text{padding:4rem 6rem}
-  .row__text h2{font-size:3.2rem}
-  .row--reverse .row__img{order:2}
-  .row--reverse .row__text{padding-left:0}
-}
-
-/* Qui sommes nous */
-.team{padding-block:2.4rem 3.6rem}
-.team h2{font-size:2.4rem;margin-bottom:2.8rem}
-.team ul{list-style:none;margin:0;padding:0;display:grid;gap:.4rem}
-.card{background:rgb(var(--fg) / .04)}
-.card img{width:100%;aspect-ratio:1.05;object-fit:contain;object-position:bottom}
-.card__body{padding:1.6rem 2.4rem 2.4rem;font-size:1.4rem}
-.card h3{font-size:1.6rem;font-weight:400}
-.card p{margin:.6rem 0 0}
-@media (min-width:750px){.team h2{font-size:3.2rem}.team ul{grid-template-columns:1fr 1fr}}
-
-/* Pied de page */
-.footer{border-top:.1rem solid rgb(var(--fg) / .08);padding-block:3.6rem;font-size:1.2rem;text-align:center}
-.footer ul{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem 2rem;padding:0;margin:1rem 0 0}
-.footer a{display:inline-block;padding:.6rem 0}
-</style>
+<link rel="icon" href="/assets/img/logo-240.webp" type="image/webp">
+<link rel="preload" href="/assets/fonts/assistant-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" as="image" href="/assets/img/blood-moon-1500.webp" imagesrcset="/assets/img/blood-moon-750.webp 750w, /assets/img/blood-moon-1500.webp 1500w" imagesizes="(min-width: 750px) 50vw, 100vw" fetchpriority="high">
+<link rel="stylesheet" href="/assets/css/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "Canoplay", "url": "https://canoplay.fr/", "logo": "https://canoplay.fr/assets/img/logo-240.webp", "email": "adrien.roques@canoplay.fr", "address": {"@type": "PostalAddress", "postalCode": "31860", "addressLocality": "Pins-Justaret", "addressCountry": "FR"}, "founder": [{"@type": "Person", "name": "Florent Hennart", "jobTitle": "Co-Fondateur"}, {"@type": "Person", "name": "Adrien Roques", "jobTitle": "Co-Fondateur"}]}</script>
 </head>
 <body>
 <a class="skip" href="#contenu">Aller au contenu</a>
-
 <div class="announce" role="region" aria-label="Annonce">Bienvenue chez Canoplay</div>
-
-<header class="page-width header">
+<header class="site-header">
+<div class="page-width header">
   <details class="menu">
     <summary aria-label="Ouvrir le menu"><svg width="20" height="16" viewBox="0 0 20 16" aria-hidden="true"><path d="M0 1h20M0 8h20M0 15h20" stroke="currentColor" stroke-width="1.5"/></svg></summary>
     <ul>
       <li><a href="/" aria-current="page">Accueil</a></li>
-      <li><a href="https://canoplay.fr/collections/all">Nos Wargames</a></li>
-      <li><a href="https://canoplay.fr/pages/contact">Contact</a></li>
-      <li><a href="https://canoplay.fr/blogs/infos">Blog</a></li>
+      <li><a href="/collections/all">Nos Wargames</a></li>
+      <li><a href="/pages/contact">Contact</a></li>
+      <li><a href="/blogs/infos">Blog</a></li>
     </ul>
   </details>
-  <a class="header__logo" href="/"><img src="assets/img/logo-240.webp" width="90" height="90" alt="Canoplay — accueil"></a>
+  <a class="header__logo" href="/"><img src="/assets/img/logo-240.webp" width="90" height="90" alt="Canoplay — accueil"></a>
   <nav class="nav" aria-label="Navigation principale">
     <ul>
       <li><a href="/" aria-current="page">Accueil</a></li>
-      <li><a href="https://canoplay.fr/collections/all">Nos Wargames</a></li>
-      <li><a href="https://canoplay.fr/pages/contact">Contact</a></li>
-      <li><a href="https://canoplay.fr/blogs/infos">Blog</a></li>
+      <li><a href="/collections/all">Nos Wargames</a></li>
+      <li><a href="/pages/contact">Contact</a></li>
+      <li><a href="/blogs/infos">Blog</a></li>
     </ul>
   </nav>
+</div>
 </header>
-
 <main id="contenu">
   <section class="banner" aria-labelledby="titre-banniere">
     <div class="banner__media">
-      <img src="assets/img/blood-moon-1500.webp" srcset="assets/img/blood-moon-750.webp 750w, assets/img/blood-moon-1500.webp 1500w" sizes="(min-width: 750px) 50vw, 100vw" width="1500" height="1125" alt="" fetchpriority="high">
+      <img src="/assets/img/blood-moon-1500.webp" srcset="/assets/img/blood-moon-750.webp 750w, /assets/img/blood-moon-1500.webp 1500w" sizes="(min-width: 750px) 50vw, 100vw" width="1500" height="1125" alt="" fetchpriority="high">
     </div>
     <div class="banner__media">
-      <img src="assets/img/storm-trooper-and-architecture-1500.webp" srcset="assets/img/storm-trooper-and-architecture-750.webp 750w, assets/img/storm-trooper-and-architecture-1500.webp 1500w" sizes="50vw" width="1500" height="2250" alt="">
+      <img src="/assets/img/storm-trooper-and-architecture-1500.webp" srcset="/assets/img/storm-trooper-and-architecture-750.webp 750w, /assets/img/storm-trooper-and-architecture-1500.webp 1500w" sizes="50vw" width="1500" height="2250" alt="">
     </div>
     <div class="banner__content">
       <h1 id="titre-banniere">Découvrir nos wargames</h1>
-      <a class="btn" href="https://canoplay.fr/collections/all">Tout voir</a>
+      <a class="btn" href="/collections/all">Tout voir</a>
     </div>
   </section>
 
   <div class="page-width rows">
     <section class="row">
-      <div class="row__img"><img src="assets/img/learn-from-failure-sign-1500.webp" srcset="assets/img/learn-from-failure-sign-750.webp 750w, assets/img/learn-from-failure-sign-1500.webp 1500w" sizes="(min-width: 750px) 50vw, 100vw" width="1500" height="1009" alt="Panneau lumineux affichant « Learn from failure »" loading="lazy" decoding="async"></div>
+      <div class="row__img"><img src="/assets/img/learn-from-failure-sign-1500.webp" srcset="/assets/img/learn-from-failure-sign-750.webp 750w, /assets/img/learn-from-failure-sign-1500.webp 1500w" sizes="(min-width: 750px) 50vw, 100vw" width="1500" height="1009" alt="Panneau lumineux affichant « Learn from failure »" loading="lazy" decoding="async"></div>
       <div class="row__text"><h2>Découvrir</h2><p>Des wargames basés sur des cartes, conçus pour le renforcement d'équipe et l'initiation à la guerre spatiale.</p></div>
     </section>
     <section class="row row--reverse">
-      <div class="row__img"><img src="assets/img/brainstorm-meeting-1500.webp" srcset="assets/img/brainstorm-meeting-750.webp 750w, assets/img/brainstorm-meeting-1500.webp 1500w" sizes="(min-width: 750px) 50vw, 100vw" width="1500" height="1000" alt="Une équipe réunie autour d'une table de travail" loading="lazy" decoding="async"></div>
+      <div class="row__img"><img src="/assets/img/brainstorm-meeting-1500.webp" srcset="/assets/img/brainstorm-meeting-750.webp 750w, /assets/img/brainstorm-meeting-1500.webp 1500w" sizes="(min-width: 750px) 50vw, 100vw" width="1500" height="1000" alt="Une équipe réunie autour d'une table de travail" loading="lazy" decoding="async"></div>
       <div class="row__text"><h2>Mettre en situation</h2><p>Simples, engageants et basés sur des contextes réalistes, ce qui les rend accessibles aux non-spécialistes.</p></div>
     </section>
     <section class="row">
-      <div class="row__img"><img src="assets/img/star-filled-night-sky-and-silhouetted-trees-1500.webp" srcset="assets/img/star-filled-night-sky-and-silhouetted-trees-750.webp 750w, assets/img/star-filled-night-sky-and-silhouetted-trees-1500.webp 1500w" sizes="(min-width: 750px) 50vw, 100vw" width="1500" height="1000" alt="Ciel étoilé et Voie lactée au-dessus d'arbres en silhouette" loading="lazy" decoding="async"></div>
+      <div class="row__img"><img src="/assets/img/star-filled-night-sky-and-silhouetted-trees-1500.webp" srcset="/assets/img/star-filled-night-sky-and-silhouetted-trees-750.webp 750w, /assets/img/star-filled-night-sky-and-silhouetted-trees-1500.webp 1500w" sizes="(min-width: 750px) 50vw, 100vw" width="1500" height="1000" alt="Ciel étoilé et Voie lactée au-dessus d'arbres en silhouette" loading="lazy" decoding="async"></div>
       <div class="row__text"><h2>Expérimenter</h2><p>Notre approche met l'accent sur les fondamentaux du wargaming, garantissant que les participants comprennent les concepts de base et puissent les appliquer dans divers scénarios.</p></div>
     </section>
   </div>
@@ -172,23 +78,22 @@ h1,h2,h3{color:rgb(var(--fg));font-weight:700;letter-spacing:.06rem;line-height:
     <h2 id="titre-equipe">Qui sommes nous</h2>
     <ul>
       <li class="card">
-        <img src="assets/img/florent-hennart.webp" width="624" height="624" alt="Portrait de Florent Hennart" loading="lazy" decoding="async">
+        <img src="/assets/img/florent-hennart.webp" width="624" height="624" alt="Portrait de Florent Hennart" loading="lazy" decoding="async">
         <div class="card__body"><h3>Florent Hennart</h3><p>Co-Fondateur</p><p>Ingénieur projet dans le spatial, il a contribué à la fabrication de nanosatellites.</p></div>
       </li>
       <li class="card">
-        <img src="assets/img/adrien-roques.webp" width="638" height="638" alt="Portrait d'Adrien Roques" loading="lazy" decoding="async">
+        <img src="/assets/img/adrien-roques.webp" width="638" height="638" alt="Portrait d'Adrien Roques" loading="lazy" decoding="async">
         <div class="card__body"><h3>Adrien Roques</h3><p>Co-Fondateur</p><p>Ingénieur dans le spatial, il a contribué au développement de segments sols.</p></div>
       </li>
     </ul>
   </section>
 </main>
-
 <footer class="footer">
   <div class="page-width">
     <p>© 2026, Canoplay</p>
     <ul>
-      <li><a href="https://canoplay.fr/policies/privacy-policy">Politique de confidentialité</a></li>
-      <li><a href="https://canoplay.fr/policies/contact-information">Coordonnées</a></li>
+      <li><a href="/pages/contact">Coordonnées</a></li>
+      <li><a href="https://m7977n-dm.myshopify.com/policies/privacy-policy">Politique de confidentialité</a></li>
     </ul>
   </div>
 </footer>
