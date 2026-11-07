@@ -138,7 +138,7 @@ h1,h2,h3{color:rgb(var(--fg));font-weight:700;letter-spacing:.06rem;line-height:
 .post-card p{max-width:76rem;margin:1rem auto 0;font-size:1.4rem}
 
 /* Blog : article */
-.article__cover{max-width:var(--page);margin:0 auto}
+.article__cover{max-width:var(--page);margin:2.4rem auto 0}
 .article__cover img{width:100%;aspect-ratio:2/1;object-fit:cover}
 .article{max-width:78rem;margin:0 auto;padding:3.2rem var(--gutter) 6rem}
 .article__header{text-align:center;margin-bottom:3.2rem}
@@ -150,11 +150,13 @@ h1,h2,h3{color:rgb(var(--fg));font-weight:700;letter-spacing:.06rem;line-height:
 .article ul{padding-left:2.2rem}
 .article strong{color:rgb(var(--fg))}
 .article a{color:rgb(var(--accent));text-underline-offset:.3rem}
+.article a strong{color:inherit}
+.article a.btn{color:rgb(var(--fg))}
 .article__back{display:inline-block;margin-top:4rem}
 
 /* Contact */
-.contact{padding-block:0 6rem;max-width:72rem}
-.contact dl{display:grid;grid-template-columns:max-content 1fr;gap:1rem 2.4rem;margin:0 0 3rem}
+.contact{padding-block:0 6rem}
+.contact dl{max-width:72rem;display:grid;grid-template-columns:max-content 1fr;gap:1rem 2.4rem;margin:0 0 3rem}
 .contact dt{color:rgb(var(--fg))}
 .contact dd{margin:0}
 

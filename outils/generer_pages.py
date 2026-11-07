@@ -339,7 +339,7 @@ def main() -> None:
     pages = {
         "/": ("index.html", page_accueil()),
         "/collections/all": ("collections/all.html", page_wargames()),
-        "/blogs/infos": ("blogs/infos.html", page_blog()),
+        "/blogs/infos": ("blogs/infos/index.html", page_blog()),
         "/pages/contact": ("pages/contact.html", page_contact()),
     }
     for w in WARGAMES:
