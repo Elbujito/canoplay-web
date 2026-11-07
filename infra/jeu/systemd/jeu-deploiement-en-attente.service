@@ -1,0 +1,9 @@
+[Unit]
+Description=Déploie la version du jeu mise en attente, si aucune partie ne tourne
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=deploiement
+ExecStart=/opt/jeu/deployer.sh --en-attente

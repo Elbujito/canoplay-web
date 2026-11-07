@@ -159,9 +159,21 @@ h1,h2,h3{color:rgb(var(--fg));font-weight:700;letter-spacing:.06rem;line-height:
 .contact dl{max-width:72rem;display:grid;grid-template-columns:max-content 1fr;gap:1rem 2.4rem;margin:0 0 3rem}
 .contact dt{color:rgb(var(--fg))}
 .contact dd{margin:0}
+.contact .lead{font-size:1.8rem;color:rgb(var(--fg) / .85)}
+.contact p{max-width:72rem}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:1.6rem 2.4rem;margin-top:3rem}
+.actions .btn{margin-top:0}
+.lien{text-underline-offset:.3rem}
 
 /* Pied de page */
 .footer{border-top:.1rem solid rgb(var(--fg) / .08);padding-block:3.6rem;font-size:1.2rem;text-align:center}
 .footer p{margin:0}
 .footer ul{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem 2rem;padding:0;margin:1rem 0 0}
 .footer a{display:inline-block;padding:.6rem 0}
+
+/* Vignette « jouable en ligne » et capture du jeu */
+.badge{display:inline-block;margin-top:1.2rem;padding:.2rem .8rem;font-size:1.1rem;letter-spacing:.1rem;text-transform:uppercase;color:#fff;background:rgb(var(--accent))}
+.badge + h2{margin-top:.6rem}
+.capture{margin:4.8rem 0 0}
+.capture img{width:100%;height:auto;border:.1rem solid rgb(var(--fg) / .1)}
+.capture figcaption{font-size:1.3rem;margin-top:.8rem}

@@ -1,0 +1,36 @@
+{
+	email {$ACME_EMAIL}
+}
+
+(securite) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+}
+
+# Portail de connexion
+auth.gamecanoplay.fr {
+	import securite
+	reverse_proxy authelia:9091
+}
+
+# Le jeu : chaque requête passe d'abord par Authelia (identifiant + mot de passe)
+gamecanoplay.fr {
+	import securite
+	# La sonde de déploiement n'est jamais servie depuis Internet
+	respond /sante 404
+	forward_auth authelia:9091 {
+		uri /api/authz/forward-auth
+		copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+	}
+	# Écrit par deployer.sh : « reverse_proxy jeu-bleu:8765 » ou « reverse_proxy jeu-vert:8765 »
+	import /etc/caddy/etat/actif.caddy
+}
+
+# Variante avec www : renvoie vers l'adresse canonique
+www.gamecanoplay.fr {
+	redir https://gamecanoplay.fr{uri} permanent
+}

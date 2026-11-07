@@ -26,7 +26,9 @@ NAV = [
     ("/collections/all", "Nos Wargames"),
     ("/pages/contact", "Contact"),
     ("/blogs/infos", "Blog"),
+    ("/jouer", "Jouer"),
 ]
+JEU_URL = "https://gamecanoplay.fr/"
 
 # --- Contenu ---------------------------------------------------------------
 
@@ -46,6 +48,17 @@ WARGAMES = [
              "alt": "Dos des cartes SpaceOps : logo Canoplay Space Force sur fond spatial"},
             {"base": "spaceops-carte", "l": 1024, "h": 1536,
              "alt": "Cartes SpaceOps étalées en éventail, carte « Tour de jeu » et boîte « Stratégie Spatiale de Défense »"},
+        ],
+    },
+    {
+        "slug": "matrix-game",
+        "titre": "Matrix game",
+        "lien": "/jouer",          # jeu en ligne : la vignette mène à sa page, pas à une fiche produit
+        "badge": "Jouable en ligne",
+        "accroche": "Simulation de conflit argumentée : chaque rôle est tenu par un humain ou par une IA.",
+        "images": [
+            {"base": "matrix-game-tuile", "l": 1024, "h": 1536,
+             "alt": "Vue « Space C2 » du matrix game : frise des moyens spatiaux de chaque camp"},
         ],
     },
 ]
@@ -183,6 +196,10 @@ def page_accueil() -> str:
             + entete("/") + corps + PIED)
 
 
+def lien_wargame(w: dict) -> str:
+    return w.get("lien") or f"/products/{w['slug']}"
+
+
 def page_wargames() -> str:
     tuiles = []
     for i, w in enumerate(WARGAMES):
@@ -190,12 +207,12 @@ def page_wargames() -> str:
         charge = 'fetchpriority="high"' if i == 0 else 'loading="lazy" decoding="async"'
         tuiles.append(f"""  <li class="tile">
     <div class="tile__img"><img src="/assets/img/{im['base']}-600.webp" srcset="{srcset(im['base'], [600, 1024])}" sizes="(min-width: 750px) 25vw, 50vw" width="{im['l']}" height="{im['h']}" alt="" {charge}></div>
-    <h2><a href="/products/{w['slug']}">{esc(w['titre'])}</a></h2>
+    {f'<span class="badge">{esc(w["badge"])}</span>' if w.get("badge") else ""}<h2><a href="{lien_wargame(w)}">{esc(w['titre'])}</a></h2>
     <p>{esc(w['accroche'])}</p>
   </li>""")
     visible, ld_fil = fil([("/", "Accueil"), ("/collections/all", "Nos Wargames")])
     ld_liste = {"@context": "https://schema.org", "@type": "ItemList", "itemListElement": [
-        {"@type": "ListItem", "position": i + 1, "url": f"{SITE}/products/{w['slug']}", "name": w["titre"]}
+        {"@type": "ListItem", "position": i + 1, "url": SITE + lien_wargame(w), "name": w["titre"]}
         for i, w in enumerate(WARGAMES)]}
     corps = f"""<main id="contenu">
 {visible}<div class="page-width">
@@ -310,6 +327,35 @@ def page_article(a: dict) -> str:
                  [ld_fil, ld_art], precharge, "article") + entete("/blogs/infos") + corps + PIED)
 
 
+def page_jouer() -> str:
+    visible, ld_fil = fil([("/", "Accueil"), ("/jouer", "Jouer")])
+    ld_jeu = {"@context": "https://schema.org", "@type": "WebApplication", "name": "Matrix game Canoplay",
+              "url": JEU_URL, "applicationCategory": "GameApplication", "operatingSystem": "Navigateur web",
+              "inLanguage": "fr-FR", "publisher": {"@type": "Organization", "name": NOM}}
+    corps = f"""<main id="contenu">
+{visible}<div class="page-width contact">
+<h1 class="page-title">Matrix game</h1>
+<p class="lead">Un <em>matrix game</em> est un jeu de simulation de conflit argumenté : chaque joueur
+propose une action et la défend par des arguments, l'arbitre en tranche l'issue. Dans le nôtre,
+chaque rôle — joueur ou arbitre — peut être tenu par un humain ou par une IA.</p>
+<p>Les scénarios couvrent des crises diplomatiques et des wargames prospectifs sur la guerre dans
+l'espace, avec un catalogue commun de moyens spatiaux. La partie se joue dans le navigateur.</p>
+<p><strong>Accès sur invitation</strong> : un identifiant vous est remis par Canoplay.</p>
+<p class="actions"><a class="btn btn--dark" href="{JEU_URL}">Jouer</a>
+<a class="lien" href="/pages/contact">Demander un accès</a></p>
+<figure class="capture">
+  <img src="/assets/img/matrix-game-c2-1600.webp" srcset="{srcset('matrix-game-c2', [800, 1600])}" sizes="(min-width: 1200px) 1100px, 100vw" width="1600" height="1000" alt="Vue « Space C2 » d'une partie : plan d'action à gauche, frise des moyens spatiaux de chaque camp à droite" loading="lazy" decoding="async">
+  <figcaption>Vue « Space C2 » d'une partie en cours.</figcaption>
+</figure>
+</div>
+</main>
+"""
+    return (tete("Jouer au matrix game — Canoplay",
+                 "Le matrix game Canoplay : simulation de conflit argumentée où chaque rôle est tenu par un "
+                 "humain ou une IA. Accès sur invitation.",
+                 "/jouer", "/assets/img/og-image.png", [ld_fil, ld_jeu]) + entete("/jouer") + corps + PIED)
+
+
 def page_contact() -> str:
     visible, ld_fil = fil([("/", "Accueil"), ("/pages/contact", "Contact")])
     corps = f"""<main id="contenu">
@@ -341,8 +387,11 @@ def main() -> None:
         "/collections/all": ("collections/all.html", page_wargames()),
         "/blogs/infos": ("blogs/infos/index.html", page_blog()),
         "/pages/contact": ("pages/contact.html", page_contact()),
+        "/jouer": ("jouer.html", page_jouer()),
     }
     for w in WARGAMES:
+        if w.get("lien"):
+            continue
         pages[f"/products/{w['slug']}"] = (f"products/{w['slug']}.html", page_wargame(w))
     for a in ARTICLES:
         pages[f"/blogs/infos/{a['slug']}"] = (f"blogs/infos/{a['slug']}.html", page_article(a))
