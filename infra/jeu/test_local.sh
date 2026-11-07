@@ -18,7 +18,7 @@ echo 'respond "Le jeu démarre…" 503' > "$T/etat/caddy/actif.caddy"
 echo "users: {}" > "$T/etat/utilisateurs.yml"
 for s in jwt session stockage; do openssl rand -hex 64 > "$T/etat/secrets/$s"; done
 echo "ACME_EMAIL=test@example.com" > "$T/.env"
-printf 'ANTHROPIC_API_KEY=\nMATRIXGAME_MODELE=mock\n' > "$T/etat/jeu.env"
+printf 'ANTHROPIC_API_KEY=sk-test-factice\nMATRIXGAME_MODELE=mock\n' > "$T/etat/jeu.env"
 # Différences de test SEULEMENT : certificats locaux, ports hauts
 sed -i '1,3c {\n\temail {$ACME_EMAIL}\n\tlocal_certs\n}' "$T/Caddyfile"
 cat > "$T/test.override.yml" <<'EOF'
@@ -63,6 +63,18 @@ verifier "c'est bien la page d'accueil du jeu" "$(grep -c 'name="jeton"' "$T/acc
 verifier "/sante jamais servie depuis Internet" "$(curl $R -b "$J" -o /dev/null -w '%{http_code}' https://gamecanoplay.fr:18443/sante)" "404"
 
 verifier "www.gamecanoplay.fr → gamecanoplay.fr" "$(curl $R -o /dev/null -w '%{http_code} %{redirect_url}' https://www.gamecanoplay.fr:18443/x)" "301 https://gamecanoplay.fr/x"
+
+echo "== Compte ajouté APRÈS le démarrage"
+# Authelia rend root propriétaire du fichier au démarrage ; sur le VPS on passe par sudo.
+# Ici (sans sudo), on l'ouvre en écriture SANS changer son inode, pour rester fidèle au serveur.
+docker exec authelia chmod 666 /config/utilisateurs.yml
+printf 'autre-motdepasse-77\nautre-motdepasse-77\n' | FICHIER="$T/etat/utilisateurs.yml" bash "$T/ajouter_joueur.sh" canoplay "Canoplay" | tail -1
+sleep 5
+verifier "nouveau compte accepté" \
+  "$(curl $R -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' -d '{"username":"canoplay","password":"autre-motdepasse-77"}' https://auth.gamecanoplay.fr:18443/api/firstfactor)" "200"
+# Le rechargement d'Authelia a fermé les sessions : florent se reconnecte, comme un vrai joueur
+curl $R -c "$J" -o /dev/null -H 'Content-Type: application/json' \
+  -d '{"username":"florent","password":"motdepasse-solide-42","keepMeLoggedIn":false}' https://auth.gamecanoplay.fr:18443/api/firstfactor
 
 echo "== Une partie démarre, puis une nouvelle version arrive"
 JETON=$(sed -n 's/.*name="jeton" value="\([^"]*\)".*/\1/p' "$T/accueil.html" | head -1)
