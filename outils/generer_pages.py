@@ -50,6 +50,17 @@ WARGAMES = [
              "alt": "Cartes SpaceOps étalées en éventail, carte « Tour de jeu » et boîte « Stratégie Spatiale de Défense »"},
         ],
     },
+    {
+        "slug": "matrix-game",
+        "titre": "Matrix game",
+        "lien": "/jouer",          # jeu en ligne : la vignette mène à sa page, pas à une fiche produit
+        "badge": "Jouable en ligne",
+        "accroche": "Simulation de conflit argumentée : chaque rôle est tenu par un humain ou par une IA.",
+        "images": [
+            {"base": "matrix-game-tuile", "l": 1024, "h": 1536,
+             "alt": "Vue « Space C2 » du matrix game : frise des moyens spatiaux de chaque camp"},
+        ],
+    },
 ]
 
 ARTICLES = [
@@ -185,6 +196,10 @@ def page_accueil() -> str:
             + entete("/") + corps + PIED)
 
 
+def lien_wargame(w: dict) -> str:
+    return w.get("lien") or f"/products/{w['slug']}"
+
+
 def page_wargames() -> str:
     tuiles = []
     for i, w in enumerate(WARGAMES):
@@ -192,12 +207,12 @@ def page_wargames() -> str:
         charge = 'fetchpriority="high"' if i == 0 else 'loading="lazy" decoding="async"'
         tuiles.append(f"""  <li class="tile">
     <div class="tile__img"><img src="/assets/img/{im['base']}-600.webp" srcset="{srcset(im['base'], [600, 1024])}" sizes="(min-width: 750px) 25vw, 50vw" width="{im['l']}" height="{im['h']}" alt="" {charge}></div>
-    <h2><a href="/products/{w['slug']}">{esc(w['titre'])}</a></h2>
+    {f'<span class="badge">{esc(w["badge"])}</span>' if w.get("badge") else ""}<h2><a href="{lien_wargame(w)}">{esc(w['titre'])}</a></h2>
     <p>{esc(w['accroche'])}</p>
   </li>""")
     visible, ld_fil = fil([("/", "Accueil"), ("/collections/all", "Nos Wargames")])
     ld_liste = {"@context": "https://schema.org", "@type": "ItemList", "itemListElement": [
-        {"@type": "ListItem", "position": i + 1, "url": f"{SITE}/products/{w['slug']}", "name": w["titre"]}
+        {"@type": "ListItem", "position": i + 1, "url": SITE + lien_wargame(w), "name": w["titre"]}
         for i, w in enumerate(WARGAMES)]}
     corps = f"""<main id="contenu">
 {visible}<div class="page-width">
@@ -328,6 +343,10 @@ l'espace, avec un catalogue commun de moyens spatiaux. La partie se joue dans le
 <p><strong>Accès sur invitation</strong> : un identifiant vous est remis par Canoplay.</p>
 <p class="actions"><a class="btn btn--dark" href="{JEU_URL}">Jouer</a>
 <a class="lien" href="/pages/contact">Demander un accès</a></p>
+<figure class="capture">
+  <img src="/assets/img/matrix-game-c2-1600.webp" srcset="{srcset('matrix-game-c2', [800, 1600])}" sizes="(min-width: 1200px) 1100px, 100vw" width="1600" height="1000" alt="Vue « Space C2 » d'une partie : plan d'action à gauche, frise des moyens spatiaux de chaque camp à droite" loading="lazy" decoding="async">
+  <figcaption>Vue « Space C2 » d'une partie en cours.</figcaption>
+</figure>
 </div>
 </main>
 """
@@ -371,6 +390,8 @@ def main() -> None:
         "/jouer": ("jouer.html", page_jouer()),
     }
     for w in WARGAMES:
+        if w.get("lien"):
+            continue
         pages[f"/products/{w['slug']}"] = (f"products/{w['slug']}.html", page_wargame(w))
     for a in ARTICLES:
         pages[f"/blogs/infos/{a['slug']}"] = (f"blogs/infos/{a['slug']}.html", page_article(a))
