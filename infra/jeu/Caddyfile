@@ -26,8 +26,16 @@ gamecanoplay.fr {
 		uri /api/authz/forward-auth
 		copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
 	}
-	# Écrit par deployer.sh : « reverse_proxy jeu-bleu:8765 » ou « reverse_proxy jeu-vert:8765 »
-	import /etc/caddy/etat/actif.caddy
+	# Portail des docs (Authelia le réserve au groupe « equipe »), publié par deployer.sh docs
+	redir /docs /docs/ 308
+	handle_path /docs/* {
+		root * /srv/docs/courant
+		file_server
+	}
+	handle {
+		# Écrit par deployer.sh : « reverse_proxy jeu-bleu:8765 » ou « reverse_proxy jeu-vert:8765 »
+		import /etc/caddy/etat/actif.caddy
+	}
 }
 
 # Variante avec www : renvoie vers l'adresse canonique

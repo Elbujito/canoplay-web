@@ -16,6 +16,7 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./etat/caddy:/etc/caddy/etat:ro
+      - ./etat/docs:/srv/docs:ro
       - caddy_data:/data
       - caddy_config:/config
     networks: [jeu]

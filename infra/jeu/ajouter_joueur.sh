@@ -2,7 +2,7 @@
 # Crée (ou réinitialise) le compte d'un joueur :   sudo /opt/jeu/ajouter_joueur.sh <identifiant> ["Nom affiché"]
 # Le mot de passe est demandé deux fois, sans écho ; seule son empreinte argon2id est écrite
 # (calculée en local par python3-argon2 : le mot de passe n'apparaît jamais dans la liste des processus).
-# Authelia relit le fichier tout seul (watch: true) : aucun redémarrage.
+# Groupes : « joueurs » par défaut ; GROUPES=joueurs,equipe donne aussi accès au portail des docs.
 set -euo pipefail
 
 IDENT="${1:?usage : ajouter_joueur.sh <identifiant> [\"Nom affiché\"]}"
@@ -15,21 +15,23 @@ read -r -s -p "Confirmation : " MDP2; echo
 [ "$MDP" = "$MDP2" ] || { echo "les deux saisies diffèrent"; exit 1; }
 [ "${#MDP}" -ge 12 ] || { echo "trop court"; exit 1; }
 
-MDP="$MDP" python3 - "$FICHIER" "$IDENT" "$NOM" <<'PY'
+GROUPES="${GROUPES:-joueurs}"
+[[ "$GROUPES" =~ ^[a-z]+(,[a-z]+)*$ ]] || { echo "GROUPES : noms en minuscules séparés par des virgules"; exit 2; }
+MDP="$MDP" python3 - "$FICHIER" "$IDENT" "$NOM" "$GROUPES" <<'PY'
 import os
 import sys
 
 import yaml
 from argon2 import PasswordHasher
 
-fichier, ident, nom = sys.argv[1:]
+fichier, ident, nom, groupes = sys.argv[1:]
 # Paramètres recommandés par Authelia pour argon2id : m = 64 Mio, t = 3, p = 4
 empreinte = PasswordHasher(time_cost=3, memory_cost=65536, parallelism=4,
                            hash_len=32, salt_len=16).hash(os.environ["MDP"])
 with open(fichier) as f:
     data = yaml.safe_load(f) or {}
 users = data.get("users") or {}
-users[ident] = {"displayname": nom, "password": empreinte, "groups": ["joueurs"]}
+users[ident] = {"displayname": nom, "password": empreinte, "groups": groupes.split(",")}
 data["users"] = users
 with open(fichier + ".nouveau", "w") as f:
     yaml.safe_dump(data, f, allow_unicode=True, sort_keys=True)

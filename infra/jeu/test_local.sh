@@ -13,7 +13,7 @@ nettoyer() {
 nettoyer; rm -rf "$T"; mkdir -p "$T"
 trap nettoyer EXIT
 cp -r "$SRC"/. "$T"/
-mkdir -p "$T/etat/caddy" "$T/etat/secrets"
+mkdir -p "$T/etat/caddy" "$T/etat/secrets" "$T/etat/docs/versions"
 echo 'respond "Le jeu démarre…" 503' > "$T/etat/caddy/actif.caddy"
 echo "users: {}" > "$T/etat/utilisateurs.yml"
 for s in jwt session stockage; do openssl rand -hex 64 > "$T/etat/secrets/$s"; done
@@ -33,7 +33,7 @@ verifier() { if [ "$2" = "$3" ]; then echo "  ✓ $1"; ok=$((ok+1)); else echo "
 R="--resolve gamecanoplay.fr:18443:127.0.0.1 --resolve www.gamecanoplay.fr:18443:127.0.0.1 --resolve auth.gamecanoplay.fr:18443:127.0.0.1 -k -s"
 
 echo "== Compte joueur"
-printf 'motdepasse-solide-42\nmotdepasse-solide-42\n' | FICHIER="$T/etat/utilisateurs.yml" bash "$T/ajouter_joueur.sh" florent "Florent" | tail -1
+printf 'motdepasse-solide-42\nmotdepasse-solide-42\n' | FICHIER="$T/etat/utilisateurs.yml" GROUPES=joueurs,equipe bash "$T/ajouter_joueur.sh" florent "Florent" | tail -1
 verifier "empreinte argon2id écrite, mot de passe absent du fichier" \
   "$(grep -c 'argon2id' "$T/etat/utilisateurs.yml")/$(grep -c 'motdepasse-solide' "$T/etat/utilisateurs.yml")" "1/0"
 
@@ -75,6 +75,29 @@ verifier "nouveau compte accepté" \
 # Le rechargement d'Authelia a fermé les sessions : florent se reconnecte, comme un vrai joueur
 curl $R -c "$J" -o /dev/null -H 'Content-Type: application/json' \
   -d '{"username":"florent","password":"motdepasse-solide-42","keepMeLoggedIn":false}' https://auth.gamecanoplay.fr:18443/api/firstfactor
+
+echo "== Portail des docs (/docs, groupe equipe)"
+PORTAIL="${PORTAIL:-}"
+if [ -n "$PORTAIL" ] && [ -f "$PORTAIL/index.html" ]; then
+  for _ in 1 2 3 4; do tar -C "$PORTAIL" -czf - . | SSH_ORIGINAL_COMMAND=docs DIR="$T" bash "$T/deployer.sh" | tail -1; sleep 1; done
+  verifier "3 versions gardées au plus" "$(find "$T/etat/docs/versions" -mindepth 1 -maxdepth 1 -type d | wc -l)" "3"
+  verifier "/docs → /docs/" "$(curl $R -b "$J" -o /dev/null -w '%{http_code} %{redirect_url}' https://gamecanoplay.fr:18443/docs)" "308 https://gamecanoplay.fr:18443/docs/"
+  verifier "portail servi au groupe equipe" "$(curl $R -b "$J" -s https://gamecanoplay.fr:18443/docs/ | grep -c 'Docs du matrix game')" "1"
+  for a in $(python3 -c "import json,sys;print(' '.join(a['chemin'] for a in json.load(open(sys.argv[1]))))" "$PORTAIL/artefacts.json"); do
+    verifier "artefact /docs/$a" "$(curl $R -b "$J" -o /dev/null -w '%{http_code}' "https://gamecanoplay.fr:18443/docs/$a")" "200"
+  done
+  verifier "/docs sans connexion → portail de connexion" "$(curl $R -o /dev/null -w '%{http_code}' https://gamecanoplay.fr:18443/docs/)" "302"
+  J2="$T/cookies_canoplay.txt"
+  curl $R -c "$J2" -o /dev/null -H 'Content-Type: application/json' \
+    -d '{"username":"canoplay","password":"autre-motdepasse-77","keepMeLoggedIn":false}' https://auth.gamecanoplay.fr:18443/api/firstfactor
+  verifier "joueur hors equipe : docs refusées" "$(curl $R -b "$J2" -o /dev/null -w '%{http_code}' https://gamecanoplay.fr:18443/docs/)" "403"
+  verifier "joueur hors equipe : jeu accessible" "$(curl $R -b "$J2" -o /dev/null -w '%{http_code}' https://gamecanoplay.fr:18443/)" "200"
+  AVANT=$(readlink "$T/etat/docs/courant")
+  printf 'pas une archive' | SSH_ORIGINAL_COMMAND=docs DIR="$T" bash "$T/deployer.sh" 2>&1 | grep -o "ÉCHEC docs.*" | head -1
+  verifier "archive invalide refusée, portail inchangé" "$(readlink "$T/etat/docs/courant")" "$AVANT"
+else
+  echo "  (portail sauté : définir PORTAIL=<dossier construit par scripts/construire_docs.py>)"
+fi
 
 echo "== Une partie démarre, puis une nouvelle version arrive"
 JETON=$(sed -n 's/.*name="jeton" value="\([^"]*\)".*/\1/p' "$T/accueil.html" | head -1)
