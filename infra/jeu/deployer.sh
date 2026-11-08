@@ -20,6 +20,25 @@ URL_PUBLIQUE="${URL_PUBLIQUE:-https://gamecanoplay.fr}"
 
 journal() { echo "[$(date -u +%FT%TZ)] $*"; }
 
+# --- Portail des docs (mode « docs ») ---------------------------------------
+# Archive tar.gz du site statique sur l'entrée standard. Bascule atomique d'un lien symbolique ;
+# les 3 dernières versions sont gardées. Verrou distinct : n'attend jamais un déploiement du jeu.
+if [ "${SSH_ORIGINAL_COMMAND:-${1:-}}" = docs ]; then
+  DOCS="$ETAT/docs"
+  mkdir -p "$DOCS/versions"
+  exec 8>"$DOCS/deploiement.lock"
+  flock 8
+  V="$DOCS/versions/$(date -u +%Y%m%dT%H%M%SZ)"
+  mkdir -p "$V"
+  if ! head -c 52428800 | tar -xz -C "$V" --no-same-owner --no-same-permissions || [ ! -f "$V/index.html" ]; then
+    rm -rf "$V"; journal "ÉCHEC docs : archive illisible, trop grosse (50 Mo) ou sans index.html"; exit 1
+  fi
+  ln -sfn "versions/${V##*/}" "$DOCS/courant.nouveau" && mv -T "$DOCS/courant.nouveau" "$DOCS/courant"
+  find "$DOCS/versions" -mindepth 1 -maxdepth 1 -type d | sort -r | tail -n +4 | xargs -r rm -rf
+  journal "DOCS EN LIGNE : ${V##*/} ($(find "$V" -name index.html | wc -l) pages)"
+  exit 0
+fi
+
 exec 9>"$ETAT/deploiement.lock"
 flock -n 9 || { journal "un déploiement est déjà en cours"; exit 0; }
 

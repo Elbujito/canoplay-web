@@ -6,7 +6,8 @@ Son code reste dans son dépôt : ce dossier ne contient que l'infrastructure.
 ```
 Internet ──443──▶ Caddy (HTTPS automatique)
                     ├── auth.gamecanoplay.fr ──▶ Authelia (identifiant + mot de passe, anti-force brute)
-                    └── gamecanoplay.fr  ──▶ forward_auth Authelia ──▶ jeu-bleu | jeu-vert (port 8765, réseau interne)
+                    └── gamecanoplay.fr  ──▶ forward_auth Authelia ──┬─▶ /docs/* : portail des docs (fichiers statiques, groupe « equipe »)
+                                                                      └─▶ le reste : jeu-bleu | jeu-vert (port 8765, réseau interne)
 ```
 
 ## Déploiement continu
@@ -23,6 +24,15 @@ Internet ──443──▶ Caddy (HTTPS automatique)
    - démarre la nouvelle couleur, attend qu'elle soit saine, bascule Caddy, arrête l'ancienne ;
    - si la nouvelle version n'est pas saine, **l'ancienne reste en ligne**.
 
+## Portail des docs — `https://gamecanoplay.fr/docs/`
+
+- Construit par `scripts/construire_docs.py` (dépôt matrix-game) à chaque push sur `main` qui touche `docs/` :
+  chaque dossier avec `deck.json` + `index.html` devient une présentation, chaque `.md` une page HTML.
+- Envoyé par le workflow **Docs** avec la même clé SSH, en mode `docs` : `deployer.sh` extrait l'archive dans
+  `etat/docs/versions/<date>`, bascule le lien `etat/docs/courant` d'un coup et garde 3 versions.
+  Archive illisible, de plus de 50 Mo ou sans `index.html` : refusée, la version en ligne reste.
+- Accès : groupe **equipe** seulement (règle Authelia) ; un compte « joueurs » reçoit 403 sur `/docs`.
+
 ## Mise en place (une fois)
 
 | # | Qui | Action |
@@ -38,7 +48,8 @@ Internet ──443──▶ Caddy (HTTPS automatique)
 
 | Besoin | Commande (sur le VPS) |
 |---|---|
-| Ajouter / réinitialiser un joueur | `sudo /opt/jeu/ajouter_joueur.sh <identifiant> "Nom"` |
+| Ajouter / réinitialiser un joueur | `sudo /opt/jeu/ajouter_joueur.sh <identifiant> "Nom"` (préfixer `GROUPES=joueurs,equipe` pour les docs) |
+| Donner / retirer l'accès aux docs | `sudo /opt/jeu/groupes_joueur.sh <identifiant> joueurs,equipe` (ou `joueurs`) |
 | Retirer un joueur | supprimer son bloc dans `/opt/jeu/etat/utilisateurs.yml` (pris en compte à chaud) |
 | Version en ligne / en attente | `cat /opt/jeu/etat/version_en_ligne /opt/jeu/etat/version_en_attente` |
 | Journaux | `docker logs jeu-bleu` (ou `jeu-vert`), `journalctl -u jeu-deploiement-en-attente` |
@@ -46,6 +57,7 @@ Internet ──443──▶ Caddy (HTTPS automatique)
 
 ## Tester en local
 
-`infra/jeu/test_local.sh` rejoue toute la chaîne avec Docker (certificats locaux) : 18 vérifications —
+`PORTAIL=<portail construit> infra/jeu/test_local.sh …` rejoue toute la chaîne avec Docker (certificats locaux) : 31 vérifications —
+portail des docs (accès equipe / refus joueurs, versions, archive invalide),
 connexion, refus du mauvais mot de passe, `/sante` invisible depuis Internet, mise en attente pendant
 une partie, bascule, version défaillante refusée, tag injecté refusé.

@@ -55,8 +55,9 @@ echo "== 5. Fichiers de l'infrastructure dans $DIR"
 install -d -m 755 "$DIR" "$DIR/authelia"
 install -m 644 "$SRC/docker-compose.yml" "$SRC/Caddyfile" "$DIR/"
 install -m 644 "$SRC/authelia/configuration.yml" "$DIR/authelia/"
-install -m 755 "$SRC/deployer.sh" "$SRC/ajouter_joueur.sh" "$DIR/"
+install -m 755 "$SRC/deployer.sh" "$SRC/ajouter_joueur.sh" "$SRC/groupes_joueur.sh" "$DIR/"
 install -d -m 750 -o deploiement -g deploiement "$DIR/etat" "$DIR/etat/caddy"
+install -d -m 755 -o deploiement -g deploiement "$DIR/etat/docs" "$DIR/etat/docs/versions"
 install -d -m 700 "$DIR/etat/secrets"
 [ -f "$DIR/etat/caddy/actif.caddy" ] || { echo 'respond "Le jeu démarre…" 503' > "$DIR/etat/caddy/actif.caddy"; chown deploiement "$DIR/etat/caddy/actif.caddy"; }
 [ -f "$DIR/etat/utilisateurs.yml" ] || echo "users: {}" > "$DIR/etat/utilisateurs.yml"
@@ -77,7 +78,7 @@ systemctl enable --now jeu-deploiement-en-attente.timer
 
 echo "== 7. Premier compte (Authelia refuse de démarrer sans au moins un compte)"
 if ! grep -q 'password:' "$DIR/etat/utilisateurs.yml"; then
-  "$DIR/ajouter_joueur.sh" "${ADMIN_IDENT:?définir ADMIN_IDENT : identifiant du premier compte}"
+  GROUPES=joueurs,equipe "$DIR/ajouter_joueur.sh" "${ADMIN_IDENT:?définir ADMIN_IDENT : identifiant du premier compte}"
 fi
 
 echo "== 8. Démarrage de Caddy et Authelia"

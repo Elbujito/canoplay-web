@@ -23,6 +23,15 @@ authentication_backend:
 access_control:
   default_policy: deny
   rules:
+    # Portail des docs : groupe « equipe » seulement (sudo /opt/jeu/groupes_joueur.sh <id> joueurs,equipe)
+    - domain: gamecanoplay.fr
+      resources: ['^/docs([/?].*)?$']
+      subject: ['group:equipe']
+      policy: one_factor
+    - domain: gamecanoplay.fr
+      resources: ['^/docs([/?].*)?$']
+      policy: deny
+    # Le jeu : tout compte connecté
     - domain: gamecanoplay.fr
       policy: one_factor    # passer à two_factor pour exiger un code TOTP
 
